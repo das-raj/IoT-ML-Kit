@@ -8,3 +8,5 @@ myenv
 .env
 
 *.sqlite3
+
+.vscode
