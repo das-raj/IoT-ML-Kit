@@ -1,11 +1,6 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Data Visualization</title>
-</head>
-<body>
-	<img src="{% static 'images/' %}{{ filename }}">
-</body>
-</html>
+{% block content %}
+	<img class="center" src="{% static 'images/' %}{{ filename }}">
+{% endblock %}

@@ -5,11 +5,12 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 #ML models imports
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+
 import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
+import datetime
 
 # Create your views here.
 def index(request):
@@ -28,9 +29,10 @@ def input_form(request):
 
 		url_thingspeak = 'https://thingspeak.com/channels/'+channel_id+'/fields/'+field_no+'.csv'
 		request.session['website'] = 'IOT_ML_KIT'
-		print('[+]SessionKey: '+request.session.session_key)
+		#print('[+]SessionKey: '+request.session.session_key)
 
-		filename = model+"_"+str(request.session.session_key)+'.png'
+		#filename = model+"_"+str(request.session.session_key)+'.png'
+		filename = model+"_"+str(datetime.datetime.now().timestamp())+'.png'
 		if model=="LR":
 			linearmodel(url_thingspeak, 'static/images/'+filename)
 		elif model=="SV":
@@ -60,17 +62,18 @@ def supportvector(url, filename):
 
 	# Fitting SVR to the dataset
 	from sklearn.svm import SVR
-	regressor = SVR(kernel = 'rbf')
-	regressor.fit(X, y)
+	regressor_svr = SVR(kernel = 'rbf')
+	regressor_svr.fit(X, y)
 
 	# Visualising the SVR results (for higher resolution and smoother curve)
-	plt.scatter(X, y, color = 'red')
-	plt.plot(X, regressor.predict(X), color = 'blue')
-	plt.title('Support Vector')
-	plt.xlabel('Timestamp')
-	plt.ylabel('Temperature')
+	import matplotlib.pyplot as pltsv
+	pltsv.scatter(X, y, color = 'red')
+	pltsv.plot(X, regressor_svr.predict(X), color = 'blue')
+	pltsv.title('Support Vector')
+	pltsv.xlabel('Timestamp')
+	pltsv.ylabel('Temperature')
 	#plt.show()
-	plt.savefig(filename)
+	pltsv.savefig(filename)
 	print('[+]Image Saved')
 	
 
@@ -78,12 +81,13 @@ def randomforest(url, filename):
 	X,y = data_preprocess(url)
 
 	# Fitting Random Forest Regression to the dataset
-	regressor = RandomForestRegressor(n_estimators = 10000, random_state = 0)
-	regressor.fit(X, y)
+	regressor_rf = RandomForestRegressor(n_estimators = 10000, random_state = 0)
+	regressor_rf.fit(X, y)
 
 	# Visualising the SVR results (for higher resolution and smoother curve)
+	import matplotlib.pyplot as plt
 	plt.scatter(X, y, color = 'red')
-	plt.plot(X, regressor.predict(X), color = 'blue')
+	plt.plot(X, regressor_rf.predict(X), color = 'blue')
 	plt.title('Random Forest')
 	plt.xlabel('Timestamp')
 	plt.ylabel('Temperature')
@@ -103,18 +107,19 @@ def linearmodel(url, filename):
 
 	# Fitting SIMPLE LINEAR REGRESSION to the Training Set
 	from sklearn.linear_model import LinearRegression
-	regressor = LinearRegression()
-	regressor.fit(X_train, y_train)
+	regressor_lr = LinearRegression()
+	regressor_lr.fit(X_train, y_train)
 
 	# Visualising the Training set results
-	plt.scatter(X_train, y_train, color='red', label='predicted')
-	plt.plot(X_train, regressor.predict(X_train), color='blue', label='actual')
-	plt.title('Linear Regression')
-	plt.xlabel('Timestamp')
-	plt.ylabel('Temperature')
-	plt.legend(loc='upper left', numpoints=1)
+	import matplotlib.pyplot as pltlm
+	pltlm.scatter(X_train, y_train, color='red', label='predicted')
+	pltlm.plot(X_train, regressor_lr.predict(X_train), color='blue', label='actual')
+	pltlm.title('Linear Regression')
+	pltlm.xlabel('Timestamp')
+	pltlm.ylabel('Temperature')
+	pltlm.legend(loc='upper left', numpoints=1)
 	#plt.show()
-	plt.savefig(filename)
+	pltlm.savefig(filename)
 	print('[+]Image Saved')
 
 
